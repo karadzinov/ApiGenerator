@@ -29,14 +29,73 @@ class GenerateApiCommand extends Command
         $this->fields = $this->option('fields');
         $this->relationships = $this->option('relationships');
 
+        $this->generateModel();
         $this->generateController();
         $this->generateRequests();
         $this->generateService();
         $this->generateRoutes();
     }
 
+    protected function parseFields(): array
+    {
+        $fields = [];
+
+        if ($this->fields) {
+            $pairs = explode(',', $this->fields);
+            foreach ($pairs as $pair) {
+                [$name, $type] = explode(':', $pair);
+                $fields[$name] = $type ?? 'string';
+            }
+        }
+
+        return $fields;
+    }
+
+    protected function generateModel()
+    {
+        $modelPath = app_path("Models/{$this->modelName}.php");
+
+        if (File::exists($modelPath)) {
+            $this->warn("Model {$this->modelName} already exists. Skipping.");
+            return;
+        }
+
+        $fieldsArray = array_keys($this->parseFields());
+        $fillableCode = "protected \$fillable = ['" . implode("', '", $fieldsArray) . "'];";
+
+        $modelContent = <<<PHP
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class {$this->modelName} extends Model
+{
+    use HasFactory;
+
+    {$fillableCode}
+}
+PHP;
+
+        File::ensureDirectoryExists(app_path('Models'));
+        File::put($modelPath, $modelContent);
+        $this->info("Model created: {$this->modelName}");
+
+        // Create migration
+        $table = Str::snake(Str::plural($this->modelName));
+        $this->callSilent('make:migration', [
+            'name' => "create_{$table}_table",
+            '--create' => $table,
+        ]);
+        $this->info("Migration created for table: {$table}");
+    }
+
     protected function generateController()
     {
+        File::ensureDirectoryExists(app_path('Http/Controllers/Api'));
+
         $controllerContent = <<<EOT
 <?php
 
@@ -81,11 +140,13 @@ EOT;
 
         $controllerPath = app_path("Http/Controllers/Api/{$this->modelName}Controller.php");
         File::put($controllerPath, $controllerContent);
-        $this->info("{$this->modelName}Controller generated successfully!");
+        $this->info("Controller created: {$this->modelName}Controller");
     }
 
     protected function generateRequests()
     {
+        File::ensureDirectoryExists(app_path('Http/Requests'));
+
         // Store Request
         $storeRequestTemplate = "<?php
 
@@ -126,11 +187,13 @@ class {$this->modelName}UpdateRequest extends FormRequest
 ";
         file_put_contents(app_path("Http/Requests/{$this->modelName}UpdateRequest.php"), $updateRequestTemplate);
 
-        $this->info("{$this->modelName} requests generated successfully!");
+        $this->info("Requests created: {$this->modelName}StoreRequest, {$this->modelName}UpdateRequest");
     }
 
     protected function generateService()
     {
+        File::ensureDirectoryExists(app_path('Services'));
+
         $serviceContent = "<?php
 
 namespace App\Services;
@@ -162,7 +225,7 @@ class {$this->modelName}Service
 }
 ";
         file_put_contents(app_path("Services/{$this->modelName}Service.php"), $serviceContent);
-        $this->info("{$this->modelName} service generated successfully!");
+        $this->info("Service created: {$this->modelName}Service");
     }
 
     protected function generateRoutes()
