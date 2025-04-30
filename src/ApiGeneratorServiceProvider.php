@@ -8,17 +8,18 @@ class ApiGeneratorServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        // Register the commands only if the application is running in the console
         if ($this->app->runningInConsole()) {
             $this->commands([
                 Commands\GenerateApiCommand::class,
-                // Other commands here
+                Commands\GenerateCrudCommand::class,
             ]);
         }
     }
 
     public function boot()
     {
-        // Load routes, migrations, etc.
+        // Loading routes, migrations, and configuration publishing
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->publishes([
@@ -26,4 +27,3 @@ class ApiGeneratorServiceProvider extends ServiceProvider
         ], 'config');
     }
 }
-
