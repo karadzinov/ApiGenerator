@@ -271,15 +271,15 @@ class {$this->modelName}Service
         return {$this->modelName}::create(\$data);
     }
 
-    public function update({$this->modelName} \$model, array \$data)
+    public function update({$this->modelName} \${$this->modelNameLower}, array \$data)
     {
-        \$model->update(\$data);
-        return \$model;
+        \${$this->modelNameLower}->update(\$data);
+        return \${$this->modelNameLower};
     }
 
-    public function destroy({$this->modelName} \$model)
+    public function destroy({$this->modelName} \${$this->modelNameLower})
     {
-        \$model->delete();
+        \${$this->modelNameLower}->delete();
     }
 }
 ";
@@ -301,27 +301,22 @@ class {$this->modelName}Service
         $fileContent = file($routesPath);
 
         $insideGroup = false;
-        $newContent = [];
-
-        foreach ($fileContent as $line) {
-            $trimmed = trim($line);
-            if (str_starts_with($trimmed, $routeGroupStart)) {
+        $routeAdded = false;
+        foreach ($fileContent as $key => $line) {
+            if (trim($line) === $routeGroupStart) {
                 $insideGroup = true;
             }
 
             if ($insideGroup && trim($line) === $routeGroupEnd) {
-                // Before ending the group, insert route if not already present
-                if (!Str::contains(implode('', $fileContent), $routeLine)) {
-                    $newContent[] = $routeLine . "\n";
-                    $this->info("API route for {$this->modelName} added successfully!");
+                if (!$routeAdded) {
+                    array_splice($fileContent, $key, 0, $routeLine);
+                    $routeAdded = true;
                 }
+                break;
             }
-
-            $newContent[] = $line;
         }
 
-        // Write back to file
-        file_put_contents($routesPath, implode('', $newContent));
+        file_put_contents($routesPath, implode("\n", $fileContent));
+        $this->info("Route entry for {$this->modelName} added successfully!");
     }
-
 }
