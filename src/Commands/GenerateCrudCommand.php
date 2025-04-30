@@ -247,6 +247,13 @@ class {$this->modelName}Resource extends JsonResource
 ";
 
         $resourcePath = app_path("Http/Resources/{$this->modelName}Resource.php");
+
+        // Check if the directory exists, create it if not
+        $resourceDir = dirname($resourcePath);
+        if (!File::exists($resourceDir)) {
+            File::makeDirectory($resourceDir, 0755, true);
+        }
+
         File::put($resourcePath, $resourceContent);
         $this->info("Resource {$this->modelName}Resource generated successfully!");
     }
