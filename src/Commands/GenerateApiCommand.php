@@ -3,7 +3,7 @@
 namespace MartinK\ApiGenerator\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str; // <-- Import Str class
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 
 class GenerateApiCommand extends Command
