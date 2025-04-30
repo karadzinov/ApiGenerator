@@ -20,9 +20,9 @@ class ApiGeneratorServiceProvider extends ServiceProvider
         // Load routes, migrations, etc.
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-	$this->publishes([
-        __DIR__ . '/../config/api-generator.php' => config_path('api-generator.php'),
-    ], 'config');
+        $this->publishes([
+            __DIR__ . '/../config/api-generator.php' => config_path('api-generator.php'),
+        ], 'config');
     }
 }
 
