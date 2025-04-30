@@ -1,0 +1,32 @@
+{
+    "name": "martink/apigenerator",
+    "description": "A Laravel package to generate CRUD and API resources.",
+    "authors": [
+        {
+            "name": "Martin Karadzinov",
+            "email": "martin@pingdevs.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MartinK\\ApiGenerator\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.4|^8.0",
+        "illuminate/support": "^8.0|^9.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MartinK\\ApiGenerator\\ApiGeneratorServiceProvider"
+            ],
+            "aliases": {
+                "ApiGenerator": "MartinK\\ApiGenerator\\Facades\\ApiGenerator"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
+
