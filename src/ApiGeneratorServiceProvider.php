@@ -8,11 +8,12 @@ class ApiGeneratorServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Register the package services here
-        $this->commands([
-            Commands\GenerateApiCommand::class,
-            // Register other commands here
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Commands\GenerateApiCommand::class,
+                // Other commands here
+            ]);
+        }
     }
 
     public function boot()

@@ -1,6 +1,6 @@
 <?php
 
-namespace MartinK\ApiGenerator\Console;
+namespace MartinK\ApiGenerator\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
