@@ -231,9 +231,18 @@ class {$this->modelName}Service
     protected function generateRoutes()
     {
         $routesPath = base_path('routes/api.php');
+
+        // Check if the api.php file exists
+        if (!File::exists($routesPath)) {
+            // If the file doesn't exist, create it with the basic structure
+            File::put($routesPath, "<?php\n\nuse Illuminate\Http\Request;\nuse Illuminate\Support\Facades\Route;\n\n");
+            $this->info("API routes file created at: {$routesPath}");
+        }
+
         $modelNamePlural = Str::plural(strtolower($this->modelName)); // <-- Corrected usage of Str::plural
         $routeLine = "    Route::apiResource('$modelNamePlural', \\App\\Http\\Controllers\\Api\\{$this->modelName}Controller::class)->names('api.{$modelNamePlural}');";
 
+        // Now append the route to the existing or newly created file
         $fileContent = file($routesPath);
         $insideGroup = false;
         $newContent = [];
@@ -254,4 +263,5 @@ class {$this->modelName}Service
 
         file_put_contents($routesPath, implode('', $newContent));
     }
+
 }
