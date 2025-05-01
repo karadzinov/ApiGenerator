@@ -85,8 +85,9 @@ PHP ^7.4|^8.0
 
 Laravel 8 or 9+
 
-📄 License
-The MIT License (MIT). Please see License File for more information.
+## License
+
+This package is open-sourced software licensed under the [MIT license](LICENSE).
 
 Developed by Martin Karadzinov
 
